@@ -1,0 +1,2 @@
+class ExistingObjectError(Exception):
+    pass
