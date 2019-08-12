@@ -4,12 +4,12 @@ import math
 
 from sqlalchemy import (
     Column,
-    Integer,
-    String,
-    Sequence,
-    ForeignKey,
-    Enum,
     DateTime,
+    Enum,
+    ForeignKey,
+    Integer,
+    Sequence,
+    String,
     Text,
 )
 from sqlalchemy.exc import OperationalError
@@ -17,7 +17,6 @@ from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import relation
 from sqlalchemy.schema import MetaData
 from sqlalchemy.sql import text
-
 
 class_registry = {}
 metadata = MetaData()
@@ -123,4 +122,3 @@ class Token(ModelBase):
                 "%s.id" % class_registry["Queue"].__tablename__, name="FK_token_queue"
             ),
         )
-

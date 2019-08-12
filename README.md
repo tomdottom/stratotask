@@ -4,12 +4,13 @@ A _Cloud Task_ scheduler and dispatcher.
 
 # Setup
 
-    pipenv sync
+    pipenv sync --dev
 
 # Tests
 
-    pipenv run python test.py
+    pipenv run pytest src/tests/
 
 # PoC demo
 
-    pipenv run python scheduler.py
+    export PYTHONPATH=src/
+    python -m stratotask

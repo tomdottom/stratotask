@@ -2,8 +2,8 @@ import datetime
 
 from sqlalchemy.exc import OperationalError
 
-import exceptions as excs
-from models import Queue, Task, Token
+from . import exceptions as excs
+from .models import Queue, Task, Token
 
 
 def refresh_object(session, obj):
@@ -119,6 +119,9 @@ def create_queue_tokens(session, queue):
     token_num, leftover_seconds = divmod(
         (now - queue.bucket_updated).total_seconds(), queue.bucket_rate
     )
+    if token_num >= queue.bucket_size:
+        token_num = queue.bucket_size
+        leftover_seconds = 0
     try:
         queue.bucket_updated = now - datetime.timedelta(seconds=leftover_seconds)
         session.add(queue)
