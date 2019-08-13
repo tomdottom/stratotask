@@ -52,21 +52,21 @@ if __name__ == "__main__":
 
     # Foo can process one task per second
     print("Creating queue 'Foo'")
-    create_queue(session, "Foo", 10, 1)
+    foo = create_queue(session, "Foo", 10, 1)
     print("Adding tasks to queue 'Foo'")
-    create_task(session, "Foo Bar", get_queue(session, "Foo"))
-    create_task(session, "Foo Baz", get_queue(session, "Foo"))
-    create_task(session, "Foo Qux", get_queue(session, "Foo"))
-    create_task(session, "Foo Wat", get_queue(session, "Foo"))
+    create_task(session, "Foo Bar", foo)
+    create_task(session, "Foo Baz", foo)
+    create_task(session, "Foo Qux", foo)
+    create_task(session, "Foo Wat", foo)
 
     # Bar twice as fast a Foo
     print("Creating queue 'Bar'")
-    create_queue(session, "Bar", 10, 0.5)
+    bar = create_queue(session, "Bar", 10, 0.5)
     print("Adding tasks to queue 'Bar'")
-    create_task(session, "Bar Bar", get_queue(session, "Bar"))
-    create_task(session, "Bar Baz", get_queue(session, "Bar"))
-    create_task(session, "Bar Qux", get_queue(session, "Bar"))
-    create_task(session, "Bar Wat", get_queue(session, "Bar"))
+    create_task(session, "Bar Bar", bar)
+    create_task(session, "Bar Baz", bar)
+    create_task(session, "Bar Qux", bar)
+    create_task(session, "Bar Wat", bar)
 
     print("")
     print("Starting scheduler. Press ctrl+c to exit")

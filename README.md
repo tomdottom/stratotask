@@ -9,6 +9,7 @@ A _Cloud Task_ scheduler and dispatcher.
 # Tests
 
     pipenv run pytest src/tests/
+    pipenv run mypy src/
 
 # PoC demo
 

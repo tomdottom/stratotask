@@ -1,25 +1,32 @@
+from typing import Union, Optional, List
 import datetime
+from numbers import Number
 
 from sqlalchemy.exc import OperationalError
+from sqlalchemy.orm.session import Session
 
 from . import exceptions as excs
 from .models import Queue, Task, Token
 
+Model = Union[Queue, Task, Token]
 
-def refresh_object(session, obj):
+
+def refresh_object(session: Session, obj: Model) -> None:
     session.expire(obj)
     session.refresh(obj)
 
 
-def get_queue(session, name):
+def get_queue(session: Session, name: str) -> Optional[Queue]:
     return session.query(Queue).filter(Queue.name == name).first()
 
 
-def get_all_queues(session):
+def get_all_queues(session: Session) -> List[Queue] :
     return session.query(Queue).all()
 
 
-def create_queue(session, name, bucket_size=500, bucket_rate=1):
+def create_queue(
+    session: Session, name: str, bucket_size: float = 500, bucket_rate: float = 1
+) -> Queue:
     queue = session.query(Queue).filter(Queue.name == name).first()
     if queue:
         raise excs.ExistingObjectError("Queue already exists")
@@ -33,15 +40,15 @@ def create_queue(session, name, bucket_size=500, bucket_rate=1):
     return queue
 
 
-def get_or_create_queue(session, name):
+def get_or_create_queue(session: Session, name: str) -> Queue:
     queue = get_queue(session, name)
     if not queue:
         queue = create_queue(session, name)
     return queue
 
 
-def create_task(session, payload, queue):
-    task = Task(payload, queue)
+def create_task(session: Session, payload: str, queue: Queue) -> Optional[Task]:
+    task: Optional[Task] = Task(payload, queue)
     session.add(task)
     try:
         session.commit()
@@ -51,7 +58,7 @@ def create_task(session, payload, queue):
     return task
 
 
-def get_task(session, queue):
+def get_task(session: Session, queue: Queue) -> Optional[Task]:
     refresh_object(session, queue)
     token = get_queue_token(session, queue)
     if token:
@@ -78,7 +85,7 @@ def get_task(session, queue):
     return task
 
 
-def task_ack(session, task):
+def task_ack(session: Session, task: Task) -> bool:
     refresh_object(session, task)
     task.state = Task.State.COMPLETED
     session.add(task)
@@ -90,7 +97,7 @@ def task_ack(session, task):
     return True
 
 
-def task_nack(session, task):
+def task_nack(session: Session, task: Task) -> bool:
     refresh_object(session, task)
     task.state = Task.State.WAITING
     session.add(task)
@@ -102,7 +109,7 @@ def task_nack(session, task):
     return True
 
 
-def create_queue_tokens(session, queue):
+def create_queue_tokens(session: Session, queue: Queue) -> None:
     refresh_object(session, queue)
     now = datetime.datetime.utcnow()
     token_count = session.query(Token).filter(Token.queue == queue).count()
@@ -133,7 +140,7 @@ def create_queue_tokens(session, queue):
         session.rollback()
 
 
-def get_queue_token(session, queue):
+def get_queue_token(session: Session, queue: Queue) -> Optional[Token]:
     refresh_object(session, queue)
     token = (
         session.query(Token)
@@ -153,7 +160,7 @@ def get_queue_token(session, queue):
     return token
 
 
-def consume_queue_token(session, token):
+def consume_queue_token(session: Session, token: Token) -> None:
     refresh_object(session, token)
     try:
         token.state = Token.State.CONSUMED
@@ -164,7 +171,7 @@ def consume_queue_token(session, token):
         session.rollback()
 
 
-def return_queue_token(session, token):
+def return_queue_token(session: Session, token: Token) -> None:
     refresh_object(session, token)
     try:
         token.state = Token.State.ISSUED

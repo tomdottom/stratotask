@@ -1,3 +1,4 @@
+from typing import Dict, Type
 import datetime
 import enum
 import math
@@ -17,10 +18,14 @@ from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import relation
 from sqlalchemy.schema import MetaData
 from sqlalchemy.sql import text
+from sqlalchemy.ext.declarative.api import DeclarativeMeta
 
-class_registry = {}
+class_registry: Dict[str, DeclarativeMeta] = {}
+
 metadata = MetaData()
-ModelBase = declarative_base(metadata=metadata, class_registry=class_registry)
+ModelBase: DeclarativeMeta = declarative_base(
+    metadata=metadata, class_registry=class_registry
+)
 
 
 class Queue(ModelBase):

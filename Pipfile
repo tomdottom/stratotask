@@ -9,6 +9,7 @@ pudb = "*"
 pytest = "*"
 isort = {extras = ["pipfile"],version = "*"}
 ipython = "*"
+mypy = "*"
 
 [packages]
 sqlalchemy = "*"
